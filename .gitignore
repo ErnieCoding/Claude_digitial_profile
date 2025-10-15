@@ -1,0 +1,11 @@
+# Папки с мета данными
+tests/
+prompts/
+transcripts/
+memory/
+
+# env
+.env
+
+# venv
+venv/
