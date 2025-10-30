@@ -1,6 +1,5 @@
 #TODO: Try a different approach with identifying participants and creating everyone's digitial profiles
 
-import anthropic
 from anthropic.lib.tools import BetaAbstractMemoryTool
 from anthropic.types.beta import (
     BetaMessageParam,
@@ -17,14 +16,8 @@ from anthropic.types.beta import (
 from typing_extensions import override
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 import time
-
-load_dotenv()
-
-API = os.getenv("CLAUDE_API")
-
-MODEL = "claude-sonnet-4-5-20250929"
+from ClaudeClient import Client
 
 MEMORY_SYSTEM_PROMPT = """У тебя есть доступ к двум директориям:
 1. /memories/ - для хранения созданных файлов и аналитики (можно создавать, редактировать, удалять файлы)
@@ -489,10 +482,9 @@ class MemoryTool(BetaAbstractMemoryTool):
 
 
 if __name__ == "__main__":
+    MODEL = "claude-sonnet-4-5-20250929"
 
-    client = anthropic.Anthropic(
-        api_key=API
-    )
+    client = Client()
 
     memory = MemoryTool()
 
