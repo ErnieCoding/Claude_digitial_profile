@@ -1,4 +1,4 @@
-from CreateDigitalProfile import DIGITAL_PROFILE_SYSTEM_PROMPT
+from MemoryTool import MemoryTool, MODEL, BETAS, SYSTEM_PROMPT
 
 
 IDENTIFY_PARTICIPANTS_PROMPT = """Ты - передовая лингвистическая модель, способная распозновать людей из неструктрурированного текста-транскриптов бизнес встреч. Для этого ты проверяешь всю информацию из предоставленных встреч и создаешь полный список регулярных участников. 
@@ -30,6 +30,33 @@ IDENTIFY_PARTICIPANTS_PROMPT = """Ты - передовая лингвистич
 class Identifier:
     def __init__(self, llm_client):
         self.client = llm_client
+        self.memory = MemoryTool()
     
     def identify(self):
-        pass
+        print("\n==================[DEBUG] IDENTIFYING PARTICIPANTS==================\n")
+        
+        runner = self.client.beta.messages.tool_runner(
+            betas=BETAS,
+            model=MODEL,
+            max_tokens=10000, # max_tokens для цифровых профилей
+            system=SYSTEM_PROMPT,
+            tools=[self.memory],
+            messages=[
+                {
+                    "role":"user",
+                    "content": IDENTIFY_PARTICIPANTS_PROMPT,
+                }
+            ]
+        )
+
+        print("\n==================[DEBUG] PARTICIPANTS IDENTIFIED==================\n")
+
+        try:
+            with open("memory/memories/participants.txt", "r") as f:
+                lines = f.readlines()
+            
+            for line in lines:
+                print(line + "\n")
+        except FileNotFoundError as e:
+            print(f"\n\n[ERROR] Error processing participants.txt: {e}")
+            return
