@@ -29,16 +29,16 @@ IDENTIFY_PARTICIPANTS_PROMPT = """Ты - передовая лингвистич
 
 class Identifier:
     def __init__(self, llm_client):
-        self.client = llm_client
+        self.client = llm_client.client.beta
         self.memory = MemoryTool()
     
     def identify(self):
         print("\n==================[DEBUG] IDENTIFYING PARTICIPANTS==================\n")
         
-        runner = self.client.beta.messages.tool_runner(
+        runner = self.client.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
-            max_tokens=10000, # max_tokens для цифровых профилей
+            max_tokens=10000,
             system=SYSTEM_PROMPT,
             tools=[self.memory],
             messages=[
@@ -49,10 +49,15 @@ class Identifier:
             ]
         )
 
+        for message in runner:
+            for block in message.content:
+                if block.type == "text":
+                    print(block.text)
+
         print("\n==================[DEBUG] PARTICIPANTS IDENTIFIED==================\n")
 
         try:
-            with open("memory/memories/participants.txt", "r") as f:
+            with open("memory/memories/participants.txt", "r", encoding="utf-8", errors="replace") as f:
                 lines = f.readlines()
             
             for line in lines:

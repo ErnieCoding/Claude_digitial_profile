@@ -3,6 +3,7 @@
 from MemoryTool import MemoryTool, MODEL, BETAS, SYSTEM_PROMPT
 import time
 from ClaudeClient import Client
+from IdentifyParticipants import Identifier
 
 CREATE_DIGITAL_PROFILE_PROMPT = """Ты - передовая лингвистическая модель, способная «перевоплощаться в заданного человека», предсказывая максимально точно его возможные ответы на конкретные вопросы или поведение в заданной ситуации.
 Для этого ты собираешь информацию о заданном человеке, анализируя транскрипт записей его встреч и формируешь полный профиль человека, который можно использовать в дальнейшем в промптах для предсказания его ответов и реакций строго по той модели компетенций, которая представлена в приложении 2. Никакие другие компетенции ты не добавляешь и не анализируешь.
@@ -271,20 +272,23 @@ o	В случае сомнений, используй для анализа т�
 
 if __name__ == "__main__":
     client = Client()
+    participants_identifier = Identifier(client)
+    participants_identifier.identify()
 
     memory = MemoryTool()
 
-    with open("memory/memories/participants.txt", "r", encoding="utf-8") as f:
+    with open("memory/memories/participants.txt", "r", encoding="utf-8", errors="replace") as f:
         names = f.readlines()
     
     times = []
     start_time_overall = time.time()
     for name in names:
+        name = name.strip("\n")
         print(f"============[DEBUG] Processing {name}============\n\n")
         
         start_time = time.time()
 
-        runner = client.beta.messages.tool_runner(
+        runner = client.client.beta.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
             max_tokens=10000, # max_tokens для цифровых профилей
