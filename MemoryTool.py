@@ -145,7 +145,7 @@ class MemoryTool(BetaAbstractMemoryTool):
         if not full_path.is_file():
             raise FileNotFoundError(f"File not found: {command.path}")
         
-        if command.new_str is None:
+        if command.insert_text is None:
             raise ValueError(f"new_str cannot be None for insert operation in {command.path}")
             
         content = full_path.read_text(encoding="utf-8")
@@ -155,7 +155,7 @@ class MemoryTool(BetaAbstractMemoryTool):
         if insert_line < 0 or insert_line > len(lines):
             raise ValueError(f"Invalid insert_line: {insert_line}")
             
-        lines.insert(insert_line, command.new_str + "\n")
+        lines.insert(insert_line, command.insert_text + "\n")
         full_path.write_text("".join(lines), encoding="utf-8")
         return f"Content inserted at line {insert_line} in {command.path}"
 
