@@ -38,7 +38,7 @@ class Identifier:
         runner = self.client.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
-            max_tokens=10000,
+            max_tokens=1000,
             system=SYSTEM_PROMPT,
             tools=[self.memory],
             messages=[

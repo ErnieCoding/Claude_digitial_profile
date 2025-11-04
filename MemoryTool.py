@@ -16,7 +16,7 @@ from pathlib import Path
 
 MODEL = "claude-sonnet-4-5-20250929"
 
-BETAS = ["context-management-2025-06-27", "context-1m-2025-08-07"]
+BETAS = ["context-1m-2025-08-07", "context-management-2025-06-27"]
 
 SYSTEM_PROMPT = """У тебя есть доступ к двум директориям:
 1. /memories/ - для хранения созданных файлов и аналитики (можно создавать, редактировать, удалять файлы)
@@ -28,7 +28,15 @@ SYSTEM_PROMPT = """У тебя есть доступ к двум директо�
 - Не упоминай пользователю о работе с memory tool, если он не спрашивает
 - Перед ответом проверяй память, чтобы адаптировать глубину и стиль ответа
 - Поддерживай актуальность данных - удаляй устаревшую информацию, добавляй новые детали
-- Не сохраняй файл с прогрессом выполненной работы. Ты можешь создать промежуточный файл для самопроверки, удалив его перед завершением работы."""
+
+КРИТИЧЕСКОЕ ПРАВИЛО ОБРАБОТКИ:
+Когда получаешь задание обработать все файлы в директории:
+- ТЫ ОБЯЗАН обработать КАЖДЫЙ файл без исключений
+- После каждых 3-5 файлов выводи статус прогресса
+- Перед завершением ОБЯЗАТЕЛЬНО проверь что количество обработанных = общему количеству
+- У тебя контекст 1M токенов - этого достаточно для десятков транскриптов
+
+НЕ прекращай работу пока не обработаны ВСЕ файлы."""
 
 class MemoryTool(BetaAbstractMemoryTool):
     def __init__(self, base_path:str = "./memory"):
@@ -109,10 +117,17 @@ class MemoryTool(BetaAbstractMemoryTool):
         if read_only:
             raise PermissionError(f"Cannot create files in /transcripts directory: {command.path}")
         
+        if command.file_text is None:
+            raise ValueError(f"file_text cannot be None when creating file: {command.path}")
+        
         if full_path.exists():
             raise FileExistsError(f"File already exists: {command.path}")
             
         full_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if not isinstance(command.file_text, str):
+            raise TypeError(f"file_text must be str, got {type(command.file_text).__name__}")
+
         full_path.write_text(command.file_text, encoding="utf-8")
         return f"File created successfully at {command.path}"
     
@@ -138,6 +153,9 @@ class MemoryTool(BetaAbstractMemoryTool):
         
         if not full_path.is_file():
             raise FileNotFoundError(f"File not found: {command.path}")
+        
+        if command.new_str is None:
+            raise ValueError(f"new_str cannot be None for insert operation in {command.path}")
             
         content = full_path.read_text(encoding="utf-8")
         lines = content.splitlines(keepends=True)
@@ -177,6 +195,9 @@ class MemoryTool(BetaAbstractMemoryTool):
 
         if not full_path.is_file():
             raise FileNotFoundError(f"File not found: {command.path}")
+        
+        if command.old_str is None or command.new_str is None:
+            raise ValueError(f"old_str and new_str cannot be None for str_replace in {command.path}")
 
         content = full_path.read_text(encoding="utf-8")
         count = content.count(command.old_str)
