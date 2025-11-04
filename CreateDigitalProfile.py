@@ -1,5 +1,3 @@
-#TODO: Run more tests with new prompts, edit if needed
-
 from MemoryTool import MemoryTool, MODEL, BETAS, SYSTEM_PROMPT
 import time
 from ClaudeClient import Client
