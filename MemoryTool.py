@@ -23,7 +23,8 @@ SYSTEM_PROMPT = """У тебя есть доступ к двум директо�
 2. /transcripts/ - только для чтения транскриптов встреч (ЗАПРЕЩЕНО создавать, редактировать или удалять файлы)
 
 Правила работы с memory tool:
-- В /memories/ ты можешь использовать все операции: create, insert, delete, rename, str_replace
+- В /memories/ ты можешь использовать операции: create, insert, delete, rename
+- КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО использовать операцию str_replace
 - В /transcripts/ ты можешь ТОЛЬКО просматривать файлы через view
 - Не упоминай пользователю о работе с memory tool, если он не спрашивает
 - Перед ответом проверяй память, чтобы адаптировать глубину и стиль ответа
@@ -146,7 +147,7 @@ class MemoryTool(BetaAbstractMemoryTool):
             raise FileNotFoundError(f"File not found: {command.path}")
         
         if command.insert_text is None:
-            raise ValueError(f"new_str cannot be None for insert operation in {command.path}")
+            raise ValueError(f"insert_text cannot be None for insert operation in {command.path}")
             
         content = full_path.read_text(encoding="utf-8")
         lines = content.splitlines(keepends=True)
