@@ -364,7 +364,7 @@ if __name__ == "__main__":
     start_time_overall = time.time()
     
     # Обработка участников из participants.txt
-    for i in range(1, len(names())):
+    for i in range(3,4):
         name = names[i]
 
         print(f"\n\n{'='*70}")
