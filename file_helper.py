@@ -2,16 +2,54 @@ import os
 from pathlib import Path
 import json
 
-def fix_filename_encoding(filename):
-    """
-    Исправляет кодировку имени файла из CP1251 в UTF-8
-    """
+def fix_filename_encoding(name: str) -> str:
     try:
-        # Попытка декодировать из latin-1 (как читает Windows) и закодировать в UTF-8
-        fixed = filename.encode('latin-1').decode('utf-8')
+        raw_bytes = name.encode('latin-1')
+
+        fixed = raw_bytes.decode('utf-8')
+
         return fixed
-    except (UnicodeDecodeError, UnicodeEncodeError):
-        return filename
+    except:
+        return name
+
+def rename_broken_filenames(directory="memory/transcripts"):
+    directory = Path(directory)
+
+    if not directory.exists():
+        print(f"Директория {directory} не существует")
+        return
+
+    json_files = list(directory.glob("*.json"))
+    if not json_files:
+        print(f"В {directory} нет json-файлов")
+        return
+
+    renamed = 0
+
+    print("\nПереименование файлов:\n")
+
+    for file_path in json_files:
+        broken_name = file_path.stem                      # имя без .json
+        fixed_name = fix_filename_encoding(broken_name)   # исправленное имя
+
+        # Если имя уже нормальное — пропускаем
+        if broken_name == fixed_name:
+            print(f"✓ {file_path.name} (уже нормально)")
+            continue
+
+        new_path = file_path.with_name(f"{fixed_name}.json")
+
+        try:
+            file_path.rename(new_path)
+            print(f"→ {file_path.name}")
+            print(f"     {fixed_name}.json\n")
+            renamed += 1
+        except Exception as e:
+            print(f"!! Ошибка при переименовании {file_path.name}: {e}")
+
+    print("\n==============================")
+    print(f"Готово. Переименовано: {renamed}")
+    print("==============================")
 
 
 def convert_txt_to_json(directory="memory/transcripts"):
@@ -103,25 +141,24 @@ def convert_txt_to_json(directory="memory/transcripts"):
 
 def preview_filenames(directory="memory/transcripts"):
     """
-    Предпросмотр: показывает, как будут называться файлы после исправления
+    Показывает, как изменятся имена .json файлов.
     """
     directory = Path(directory)
-    
+
     if not directory.exists():
         print(f"❌ Директория {directory} не найдена!")
         return
-    
-    txt_files = list(directory.glob("*.txt"))
-    
-    if not txt_files:
-        print(f"⚠️ В директории {directory} нет .txt файлов")
+
+    json_files = list(directory.glob("*.json"))
+    if not json_files:
+        print(f"⚠️ В директории {directory} нет .json файлов")
         return
-    
-    print(f"📋 ПРЕДПРОСМОТР ПЕРЕИМЕНОВАНИЯ:\n")
+
+    print("📋 ПРЕДПРОСМОТР ИСПРАВЛЕНИЯ ИМЁН\n")
     print(f"{'БЫЛО':<50} → {'СТАНЕТ':<50}")
     print(f"{'-'*50} → {'-'*50}")
-    
-    for file_path in txt_files:
+
+    for file_path in json_files:
         original = file_path.name
         fixed_stem = fix_filename_encoding(file_path.stem)
         new_name = f"{fixed_stem}.json"
@@ -133,17 +170,13 @@ if __name__ == "__main__":
     
     print("🔧 Исправление кодировки и конвертация в JSON\n")
     
-    # Если передан аргумент --preview, показываем только предпросмотр
-    if len(sys.argv) > 1 and sys.argv[1] == "--preview":
-        preview_filenames()
+    preview_filenames()
+    print(f"\n{'='*60}")
+    response = input("Выполнить конвертацию? (yes/no): ").strip().lower()
+    
+    if response in ['yes', 'y', 'да', 'д']:
+        print("\nНачинаем конвертацию...\n")
+        #convert_txt_to_json()
+        rename_broken_filenames()
     else:
-        # Запрашиваем подтверждение
-        preview_filenames()
-        print(f"\n{'='*60}")
-        response = input("Выполнить конвертацию? (yes/no): ").strip().lower()
-        
-        if response in ['yes', 'y', 'да', 'д']:
-            print("\n🚀 Начинаем конвертацию...\n")
-            convert_txt_to_json()
-        else:
-            print("❌ Отменено пользователем")
+        print("Отменено пользователем")
