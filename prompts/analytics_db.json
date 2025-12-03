@@ -1,0 +1,484 @@
+{
+  "metadata": {
+    "total_meetings": 90,
+    "successful_meetings_count": 36,
+    "failed_meetings_count": 54,
+    "meeting_ids_by_success": {
+      "successful": [101, 104, 105, 109, 112, 113, 117, 122, 123, 126, 130, 132, 133, 136, 143, 145, 152, 154, 156, 158, 159, 166, 167, 168, 174, 178, 182, 183, 185, 187, 189, 190, 102, 151, 180, 145],
+      "failed": [103, 106, 107, 108, 110, 111, 114, 115, 116, 118, 119, 120, 121, 124, 125, 127, 128, 129, 131, 134, 135, 137, 138, 139, 140, 141, 142, 144, 146, 147, 148, 149, 150, 155, 157, 160, 161, 162, 163, 164, 165, 169, 170, 171, 172, 173, 175, 176, 177, 179, 181, 184, 186, 188]
+    },
+    "overall_conversion": 0.4,
+    "last_updated": "2025-11-27",
+    "meetings_date_range": {
+      "start": "2025-04-18",
+      "end": "2025-11-27"
+    }
+  },
+  
+  "conversion_by_month": {
+    "2025-04": {
+      "total": 3,
+      "successful": 1,
+      "conversion": 0.333
+    },
+    "2025-05": {
+      "total": 12,
+      "successful": 3,
+      "conversion": 0.25
+    },
+    "2025-06": {
+      "total": 18,
+      "successful": 7,
+      "conversion": 0.389
+    },
+    "2025-07": {
+      "total": 13,
+      "successful": 5,
+      "conversion": 0.385
+    },
+    "2025-08": {
+      "total": 3,
+      "successful": 1,
+      "conversion": 0.333
+    },
+    "2025-09": {
+      "total": 5,
+      "successful": 2,
+      "conversion": 0.4
+    },
+    "2025-10": {
+      "total": 18,
+      "successful": 9,
+      "conversion": 0.5
+    },
+    "2025-11": {
+      "total": 18,
+      "successful": 8,
+      "conversion": 0.444
+    }
+  },
+  
+  "conversion_by_manager": {
+    "Артем Садыков": {
+      "total_meetings": 86,
+      "successful": 35,
+      "conversion": 0.407,
+      "average_activity": 49.3
+    },
+    "Максим Гулькин": {
+      "total_meetings": 38,
+      "successful": 14,
+      "conversion": 0.368,
+      "average_activity": 23.2
+    },
+    "Александр Швецов": {
+      "total_meetings": 43,
+      "successful": 16,
+      "conversion": 0.372,
+      "average_activity": 31.9
+    },
+    "Алексей Воронин": {
+      "total_meetings": 4,
+      "successful": 0,
+      "conversion": 0.0,
+      "average_activity": 33.8
+    }
+  },
+  
+  "criteria_averages": {
+    "successful_meetings": {
+      "rapport_building": 7.28,
+      "situation_discovery": 6.78,
+      "problem_existence_depth": 6.72,
+      "problem_implications": 6.0,
+      "need_payoff_clarity": 6.19,
+      "sales_questioning_quality": 6.31,
+      "solution_fit": 7.67,
+      "client_engagement": 7.67,
+      "engagement_dynamics": 7.25,
+      "solution_presentation_quality": 7.47,
+      "understanding_validation": 6.28,
+      "objection_handling": 5.97,
+      "clear_next_steps": 8.33,
+      "stakeholder_mapping": 5.36,
+      "budget_timeline_qualification": 3.97,
+      "client_task_classification": 1.97,
+      "cognitive_overload_assessment": 6.56
+    },
+    "failed_meetings": {
+      "rapport_building": 7.0,
+      "situation_discovery": 6.22,
+      "problem_existence_depth": 5.13,
+      "problem_implications": 4.07,
+      "need_payoff_clarity": 4.83,
+      "sales_questioning_quality": 5.17,
+      "solution_fit": 6.09,
+      "client_engagement": 6.91,
+      "engagement_dynamics": 5.98,
+      "solution_presentation_quality": 6.93,
+      "understanding_validation": 5.46,
+      "objection_handling": 4.59,
+      "clear_next_steps": 7.61,
+      "stakeholder_mapping": 4.54,
+      "budget_timeline_qualification": 3.2,
+      "client_task_classification": 1.54,
+      "cognitive_overload_assessment": 5.33
+    }
+  },
+  
+  "criteria_correlation_analysis": {
+    "highest_impact_criteria": [
+      {
+        "criterion": "problem_existence_depth",
+        "success_avg": 6.72,
+        "fail_avg": 5.13,
+        "delta": 1.59,
+        "impact_level": "high"
+      },
+      {
+        "criterion": "problem_implications",
+        "success_avg": 6.0,
+        "fail_avg": 4.07,
+        "delta": 1.93,
+        "impact_level": "very_high"
+      },
+      {
+        "criterion": "solution_fit",
+        "success_avg": 7.67,
+        "fail_avg": 6.09,
+        "delta": 1.58,
+        "impact_level": "high"
+      },
+      {
+        "criterion": "need_payoff_clarity",
+        "success_avg": 6.19,
+        "fail_avg": 4.83,
+        "delta": 1.36,
+        "impact_level": "high"
+      },
+      {
+        "criterion": "cognitive_overload_assessment",
+        "success_avg": 6.56,
+        "fail_avg": 5.33,
+        "delta": 1.23,
+        "impact_level": "medium"
+      },
+      {
+        "criterion": "sales_questioning_quality",
+        "success_avg": 6.31,
+        "fail_avg": 5.17,
+        "delta": 1.14,
+        "impact_level": "medium"
+      },
+      {
+        "criterion": "engagement_dynamics",
+        "success_avg": 7.25,
+        "fail_avg": 5.98,
+        "delta": 1.27,
+        "impact_level": "medium"
+      }
+    ],
+    "lowest_impact_criteria": [
+      {
+        "criterion": "rapport_building",
+        "success_avg": 7.28,
+        "fail_avg": 7.0,
+        "delta": 0.28,
+        "impact_level": "low"
+      },
+      {
+        "criterion": "client_task_classification",
+        "success_avg": 1.97,
+        "fail_avg": 1.54,
+        "delta": 0.43,
+        "impact_level": "low"
+      },
+      {
+        "criterion": "budget_timeline_qualification",
+        "success_avg": 3.97,
+        "fail_avg": 3.2,
+        "delta": 0.77,
+        "impact_level": "low"
+      }
+    ],
+    "always_weak_criteria": [
+      {
+        "criterion": "budget_timeline_qualification",
+        "overall_avg": 3.51,
+        "status": "critically_weak"
+      },
+      {
+        "criterion": "client_task_classification",
+        "overall_avg": 1.71,
+        "status": "critically_weak"
+      },
+      {
+        "criterion": "stakeholder_mapping",
+        "overall_avg": 4.88,
+        "status": "weak"
+      }
+    ]
+  },
+  
+  "anomalies": {
+    "high_scores_but_failed": [
+      {
+        "meeting_id": 160,
+        "client_name": "ВГК",
+        "total_score": 117,
+        "average_score": 7.3,
+        "status": "в процессе принятия решения о пилоте",
+        "manager_comments": "В оценке персонала явно испугались, что ИИ их заменит. Сослались на то, что сотрудники не хотят переходить с зума. Предлагали пилотирование в HR, но ушли в игнор",
+        "reason": "Страх замены ИИ, сопротивление изменениям"
+      },
+      {
+        "meeting_id": 171,
+        "client_name": "Kidsitter",
+        "total_score": 116,
+        "average_score": 7.3,
+        "status": "отказ после первой демо-встречи",
+        "manager_comments": "Нет бюджета, даже в сокращенном варианте (на 5 лицензий). Но задачи объёмные, необходим AI-ассистент",
+        "reason": "Отсутствие бюджета несмотря на идеальное соответствие продукта"
+      },
+      {
+        "meeting_id": 190,
+        "client_name": "Роститал",
+        "total_score": 112,
+        "average_score": 7.0,
+        "status": "в процессе принятия решения о пилоте",
+        "manager_comments": "Целевой запрос на протоколы встреч, оценку кандидатов, работа с базой знаний. Госсектор (оборонка) со всеми вытекающими",
+        "reason": "Госсектор - длительный процесс принятия решений"
+      },
+      {
+        "meeting_id": 119,
+        "client_name": "UD Group",
+        "total_score": 102,
+        "average_score": 6.4,
+        "status": "отказ после первой демо-встречи",
+        "manager_comments": "Перестали выходить на связь после демо (интереса не прослеживалось уже на этапе демо)",
+        "reason": "Отсутствие реального интереса несмотря на качественную встречу"
+      },
+      {
+        "meeting_id": 137,
+        "client_name": "РРК Энергия",
+        "total_score": 107,
+        "average_score": 7.1,
+        "status": "отказ после первой демо-встречи",
+        "manager_comments": "Ассессмент. Там 4 оценщика 50+, испугались и не пошли дальше",
+        "reason": "Страх перед новыми технологиями у старших специалистов"
+      },
+      {
+        "meeting_id": 174,
+        "client_name": "Дельта Системы Безопасности",
+        "total_score": 107,
+        "average_score": 6.7,
+        "status": "отказ после первой демо-встречи",
+        "manager_comments": "Ушли в игнор",
+        "reason": "Неизвестно - хорошая встреча, но клиент пропал"
+      },
+      {
+        "meeting_id": 147,
+        "client_name": "Бош",
+        "total_score": 106,
+        "average_score": 6.6,
+        "status": "отказ после первой демо-встречи",
+        "manager_comments": "Запрос заказчика нерелевантен возможностям продукта",
+        "reason": "Несоответствие запроса и возможностей продукта"
+      },
+      {
+        "meeting_id": 163,
+        "client_name": "ФСК",
+        "total_score": 107,
+        "average_score": 6.7,
+        "status": "отказ после первой демо-встречи",
+        "manager_comments": "Нецелевой запрос (ИИ бот ,с возможностью оценки)",
+        "reason": "Клиент искал другое решение"
+      },
+      {
+        "meeting_id": 165,
+        "client_name": "СтильСитиРус",
+        "total_score": 105,
+        "average_score": 6.6,
+        "status": "отказ после первой демо-встречи",
+        "manager_comments": "Три человека в команде. запрос в ИИ- собственный консультат, формирующий акты, счета и т.п.",
+        "reason": "Слишком маленькая компания, высокая стоимость (нужно 5 лицензий, минимум 10)"
+      }
+    ],
+    "low_scores_but_succeeded": [
+      {
+        "meeting_id": 101,
+        "client_name": "Экостандарт",
+        "total_score": 71,
+        "average_score": 4.4,
+        "status": "покупка",
+        "purchase_amount": "400,000.00 ₽",
+        "reason": "Покупка несмотря на низкие оценки - возможно, сильный internal champion или острая потребность"
+      },
+      {
+        "meeting_id": 112,
+        "client_name": "ТТС",
+        "total_score": 73,
+        "average_score": 4.6,
+        "status": "покупка",
+        "purchase_amount": "600,000.00 ₽",
+        "reason": "Покупка при низких оценках - сильная предварительная работа партнера"
+      },
+      {
+        "meeting_id": 126,
+        "client_name": "Центр внедрения Протек",
+        "total_score": 73,
+        "average_score": 4.6,
+        "status": "принято решение о покупке после пилота",
+        "reason": "Успех несмотря на слабую демо-встречу - возможно, пилот показал хорошие результаты"
+      },
+      {
+        "meeting_id": 136,
+        "client_name": "Русагро",
+        "total_score": 79,
+        "average_score": 4.9,
+        "status": "принято решение о покупке после пилота",
+        "purchase_amount": "480,000.00 ₽",
+        "reason": "Успешная конверсия при средних оценках"
+      },
+      {
+        "meeting_id": 133,
+        "client_name": "Балтика",
+        "total_score": 79,
+        "average_score": 4.9,
+        "status": "в процессе принятия решения после пилота",
+        "reason": "Положительная динамика несмотря на слабую первую встречу"
+      }
+    ]
+  },
+  
+  "acquisition_channel_analysis": {
+    "партнер": {
+      "total": 17,
+      "successful": 7,
+      "conversion": 0.412
+    },
+    "конференция": {
+      "total": 23,
+      "successful": 9,
+      "conversion": 0.391
+    },
+    "внутренние_мероприятия": {
+      "total": 20,
+      "successful": 9,
+      "conversion": 0.45
+    },
+    "лид_с_сайта": {
+      "total": 14,
+      "successful": 6,
+      "conversion": 0.429
+    },
+    "от_другого_клиента": {
+      "total": 6,
+      "successful": 2,
+      "conversion": 0.333
+    }
+  },
+  
+  "industry_analysis": {
+    "IT и технологии": {
+      "total": 16,
+      "successful": 7,
+      "conversion": 0.438
+    },
+    "Производство и промышленность": {
+      "total": 17,
+      "successful": 6,
+      "conversion": 0.353
+    },
+    "HR и рекрутинг": {
+      "total": 9,
+      "successful": 2,
+      "conversion": 0.222
+    },
+    "Ритейл": {
+      "total": 8,
+      "successful": 3,
+      "conversion": 0.375
+    },
+    "Недвижимость и строительство": {
+      "total": 9,
+      "successful": 3,
+      "conversion": 0.333
+    },
+    "Финансы": {
+      "total": 7,
+      "successful": 3,
+      "conversion": 0.429
+    },
+    "Консалтинг": {
+      "total": 6,
+      "successful": 2,
+      "conversion": 0.333
+    },
+    "HoReCa": {
+      "total": 4,
+      "successful": 1,
+      "conversion": 0.25
+    },
+    "Логистика и транспорт": {
+      "total": 4,
+      "successful": 2,
+      "conversion": 0.5
+    },
+    "Здравоохранение": {
+      "total": 4,
+      "successful": 0,
+      "conversion": 0.0
+    }
+  },
+  
+  "key_insights": {
+    "critical_success_factors": [
+      "Глубина выявления проблемы (problem_existence_depth) - разница 1.59 балла",
+      "Понимание последствий проблемы (problem_implications) - разница 1.93 балла (наибольшая)",
+      "Соответствие решения проблеме (solution_fit) - разница 1.58 балла",
+      "Ясность ценности для клиента (need_payoff_clarity) - разница 1.36 балла",
+      "Качество вопросов продаж (sales_questioning_quality) - разница 1.14 балла"
+    ],
+    "universal_weaknesses": [
+      "Квалификация бюджета и сроков (budget_timeline_qualification) - средний балл 3.51 из 9",
+      "Классификация задач клиента (client_task_classification) - средний балл 1.71 из 3",
+      "Картирование стейкхолдеров (stakeholder_mapping) - средний балл 4.88 из 9"
+    ],
+    "conversion_trends": [
+      "Конверсия растет: с 25% в мае до 50% в октябре",
+      "Лучшие каналы: внутренние мероприятия (45%), лиды с сайта (42.9%), партнеры (41.2%)",
+      "Лучшие индустрии: логистика (50%), IT (43.8%), финансы (42.9%)",
+      "Худшие индустрии: здравоохранение (0%), HR и рекрутинг (22.2%)"
+    ],
+    "main_failure_reasons": [
+      "Отсутствие бюджета (несмотря на потребность)",
+      "Страх перед технологиями ИИ (особенно у старших специалистов)",
+      "Нецелевой запрос / несоответствие продукта",
+      "Клиент без реальной проблемы (ознакомительный визит)",
+      "Специфика госсектора / длительные процессы принятия решений",
+      "Слишком маленькая компания / высокая стоимость продукта"
+    ],
+    "recommendations": [
+      "Фокусироваться на глубоком выявлении проблем и их последствий в начале встречи",
+      "Обязательно квалифицировать бюджет на ранних этапах (сейчас средний балл 3.5/9)",
+      "Улучшить картирование стейкхолдеров - выявлять всех лиц, принимающих решение",
+      "Снизить когнитивную перегрузку клиентов - фокусироваться на релевантных функциях",
+      "Разработать стратегию работы с возражениями о замене ИИ",
+      "Создать облегченные пакеты для малого бизнеса",
+      "Усилить предварительную квалификацию лидов (избегать нецелевых)"
+    ]
+  },
+  
+  "meeting_outcomes_distribution": {
+    "покупка": 6,
+    "принято решение о пилоте": 11,
+    "в процессе пилота": 2,
+    "принято решение о покупке после пилота": 3,
+    "в процессе принятия решения после пилота": 2,
+    "отказ после пилота": 12,
+    "принято решение о пилоте, но отказ до пилота": 6,
+    "отказ после первой демо-встречи": 42,
+    "в процессе принятия решения о пилоте": 6
+  }
+}
