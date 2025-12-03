@@ -1,13 +1,57 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 from MemoryTool import MemoryTool, SYSTEM_PROMPT, MODEL, BETAS
 from ClaudeClient import Client
-import time
+
+def process_question(i, query, new_sys_prompt, client, memory):
+    """Обрабатывает один вопрос"""
+    start_time = time.time()
+    
+    print(f"\n{'='*60}")
+    print(f"[Thread {i+1}] Processing query:\n{query}\n")
+    
+    try:
+        runner = client.client.beta.messages.tool_runner(
+            betas=BETAS,
+            model=MODEL,
+            max_tokens=10000,
+            system=new_sys_prompt + f"**Свой финальный ответ сохраняйте в файле с названием `demo2pilots_analysis_Q{i + 1}.md`**",
+            tools=[memory],
+            messages=[
+                {
+                    "role": "user",
+                    "content": query,
+                }
+            ]
+        )
+
+        all_text = []
+        for message in runner:
+            for block in message.content:
+                if block.type == "text":
+                    all_text.append(block.text)
+        
+        end_time = time.time()
+        time_elapsed = end_time - start_time
+        
+        output_file = f"tests/Demo2Pilots DB Test/LLM_response{i+1}.txt"
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(f"Time took for question {i+1}: {time_elapsed:.2f} seconds\n\n")
+            f.write("\n".join(all_text))
+        
+        print(f"[Thread {i+1}] ✅ Completed in {time_elapsed:.2f}s")
+        return i, time_elapsed, "success"
+        
+    except Exception as e:
+        print(f"[Thread {i+1}] ❌ Error: {e}")
+        return i, 0, f"error: {e}"
 
 
 if __name__ == "__main__":
     client = Client()
-
     memory = MemoryTool()
-
+    
+    # Ваш questions_list и new_sys_prompt
     questions_list = [
         "Какие каналы привлечения показали самую высокую конверсию?",
         "Какая средняя конверсия по месяцам?",
@@ -24,9 +68,8 @@ if __name__ == "__main__":
         "Найди закономерность: успешные встречи с клиентами без задачи - какие критерии у них выше среднего?",
         "Какие каналы привлечения приводят клиентов с конкретной задачей, и какая у них конверсия?",
         "Сравни: внутренние vs внешние мероприятия - разница в конверсии, оценках критериев, типах клиентов?",
-    ]
-
-    new_sys_prompt = SYSTEM_PROMPT + """\n\nВы - аналитический ассистент для руководителя отдела продаж компании RConf, которая разрабатывает и продает платформу видеоконференцсвязи с искусственным интеллектом для оценки и развития сотрудников.
+    ] 
+    new_sys_prompt = SYSTEM_PROMPT + f"""\n\nВы - аналитический ассистент для руководителя отдела продаж компании RConf, которая разрабатывает и продает платформу видеоконференцсвязи с искусственным интеллектом для оценки и развития сотрудников.
 Ваша главная задача - Анализировать базу данных встреч с клиентами для выявления:
 
 - Корреляций между качеством проведения встреч и конверсией в покупку
@@ -40,8 +83,9 @@ if __name__ == "__main__":
 
 ### ПОШАГОВАЯ ЛОГИКА ОБРАБОТКИ
   1. Проверь файлы analytics_db.json и meetings_index.json - НЕ ИЗМЕНЯЙ ЭТИ ФАЙЛЫ НИ В КОЕМ СЛУЧАЕ
+  2. [PLACEHOLDER]
   2. Выдели для себя нужную информацию и только затем проходись по нужным файлам (analytics_db.json и meetings_index.json содержат краткие сводки, которые полезны для выявления нужных файлов для проверки)
-  3. Игнорируй файлы с названием "demo2pilots_analysis{num}.md" - бери сводки только из вышеуказанных файлов и директории transripts/
+  3. Игнорируй файлы с названием "demo2pilots_analysis{{num}}.md" - бери сводки только из вышеуказанных файлов и директории transripts/
 
 ### Классификация статусов клиентов
 ✅ УСПЕШНЫЕ встречи (клиент согласился на следующий шаг):
@@ -213,38 +257,45 @@ if __name__ == "__main__":
 - Корректно работает с временными рядами и датами
 - Тщательно проверяет все подсчеты перед предоставлением статистики
 - Никогда не использует meeting_id для определения количества встреч"""
-
-    for i in range(0, 1):
-      start_time = time.time()
-      query = questions_list[i]
-
-      print(f"\n{'='*60}")
-      print(f"[INFO] Processing query:\n{query}\n")
-      runner = client.client.beta.messages.tool_runner(
-              betas=BETAS,
-              model=MODEL,
-              max_tokens=10000, # max_tokens для ответа
-              system=new_sys_prompt + f"**Свой финальный ответ сохраняйте в файле с названием `demo2pilots_analysis_Q{i + 1}.md`**",
-              tools=[memory],
-              messages=[
-                  {
-                      "role":"user",
-                      "content":query,
-                  }
-              ]
-      )
-
-      all_text = []
-      for message in runner:
-          for block in message.content:
-              if block.type == "text":
-                  all_text.append(block.text)
-      
-      end_time = time.time()
-      time_elapsed = end_time - start_time
-
-      with open(f"tests/Demo2Pilots DB Test/LLM_response{i+1}.txt", "w", encoding="utf-8") as f:
-        f.write(f"Time took for question {i+1}: {time_elapsed:.2f} seconds\n\n")
-        f.write("\n".join(all_text))
-
-      print(f"\n{'='*60}")
+    
+    
+    # === Многопоточная обработка ===
+    max_workers = 5  # 5 threads
+    total_start = time.time()
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Запускаем все задачи
+        futures = {
+            executor.submit(
+                process_question, 
+                i, 
+                questions_list[i], 
+                new_sys_prompt.replace("[PLACEHOLDER]", f"Если создаешь файл с прогрессом - СОЗДАВАЙ ТОЛЬКО С НАЗВАНИЕМ progress_Q{i + 1}.txt"), 
+                client, 
+                memory
+            ): i 
+            for i in range(len(questions_list))
+        }
+        
+        results = []
+        for future in as_completed(futures):
+            result = future.result()
+            results.append(result)
+    
+    total_time = time.time() - total_start
+    
+    # Итоговая статистика
+    print(f"\n{'='*60}")
+    print(f"📊 SUMMARY")
+    print(f"{'='*60}")
+    print(f"Total time: {total_time:.2f} seconds")
+    print(f"Questions processed: {len(questions_list)}")
+    print(f"Average time per question: {total_time/len(questions_list):.2f}s")
+    
+    results.sort(key=lambda x: x[0])
+    print(f"\n📋 Per-question breakdown:")
+    for i, elapsed, status in results:
+        if status == "success":
+            print(f"  Q{i+1}: {elapsed:.2f}s ✅")
+        else:
+            print(f"  Q{i+1}: {status} ❌")

@@ -125,7 +125,7 @@ if __name__ == "__main__":
     runner = client.client.beta.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
-            max_tokens=30000, # max_tokens для ответа
+            max_tokens=20000, # max_tokens для ответа
             system=SYSTEM_PROMPT,
             tools=[memory],
             messages=[
