@@ -176,7 +176,6 @@ if __name__ == "__main__":
     
     if response in ['yes', 'y', 'да', 'д']:
         print("\nНачинаем конвертацию...\n")
-        #convert_txt_to_json()
-        rename_broken_filenames()
+        convert_txt_to_json()
     else:
         print("Отменено пользователем")

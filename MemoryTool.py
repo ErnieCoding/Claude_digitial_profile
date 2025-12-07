@@ -16,7 +16,7 @@ from pathlib import Path
 
 MODEL = "claude-sonnet-4-5-20250929"
 
-BETAS = ["context-1m-2025-08-07", "context-management-2025-06-27"]
+BETAS = ["context-management-2025-06-27"]
 
 SYSTEM_PROMPT = """Правила работы с memory tool:
 У тебя есть доступ к двум директориям:
