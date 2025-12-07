@@ -13,7 +13,9 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
   "metadata": {
     "total_meetings": <num>,
     "successful_meetings_count": <num>,
+    "successful_meetings_filenames": "",
     "failed_meetings_count": <num>,
+    "failed_meetings_filenames": "",
     "meeting_ids_by_success": {
         "successful": [101, 105, 112, ...],
         "failed": [102, 103, 108, ...]
@@ -30,32 +32,37 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
     "Month-1": {
       "total": <num>,
       "successful": <num>,
-      "conversion": <num>
+      "conversion": <num>,
+      "meetings_filenames": ""
     },
     "Month-2": {
       "total": <num>,
       "successful": <num>,
-      "conversion": <num>
+      "conversion": <num>,
+      "meetings_filenames": ""
     },
     "Month-3": {
       "total": <num>,
       "successful": <num>,
       "conversion": <num>
+      "meetings_filenames": "",
     }
   },
   
   "conversion_by_manager": {
-    "Артем Садыков": {
+    "Manager 1": {
       "total_meetings": <num>,
       "successful": <num>,
       "conversion": <num>,
-      "average_activity": <num>
+      "average_activity": <num>,
+      "meetings_filenames": ""
     },
-    "Максим Гулькин": {
+    "Manager 2": {
       "total_meetings": <num>,
       "successful": <num>,
       "conversion": <num>,
-      "average_activity": <num>
+      "average_activity": <num>,
+      "meetings_filenames": ""
     }
   },
   
@@ -108,13 +115,13 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
 2. **Агрегируй данные** по всем категориям выше
 3. **Вычисли корреляции** между критериями и успехом
 4. **Найди аномалии** (высокие оценки + провал, низкие оценки + успех)
-5. **Создай индекс** с кратким описанием каждой встречи
+5. **Создай индекс** с кратким описанием каждой встречи, включая названия встреч (файлов)
 6. **Сохрани в /memories/analytics_db.json**
 
 ## ВАЖНО:
 - Используй точные математические вычисления (не округляй до целых)
 - Если данных недостаточно для корреляции, укажи null
-- Сохраняй список meeting_ids для быстрого доступа к детальным данным
+- Сохраняй список meetings_filenames вместе с meetings_ids по каждой встрече для быстрого доступа к детальным данным
 """
 
 if __name__ == "__main__":
