@@ -1,3 +1,4 @@
+#TODO: Try to generate the files again - fix the error with invalid path for some of the files
 from MemoryTool import MemoryTool, SYSTEM_PROMPT, MODEL, BETAS
 from ClaudeClient import Client
 
