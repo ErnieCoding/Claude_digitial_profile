@@ -1,130 +1,96 @@
 import os
 from pathlib import Path
-import json
 
 def fix_filename_encoding(name: str) -> str:
+    """Исправляет кодировку имени файла (если нужно)"""
     try:
         raw_bytes = name.encode('latin-1')
-
         fixed = raw_bytes.decode('utf-8')
-
         return fixed
     except:
         return name
 
-def rename_broken_filenames(directory="memory/transcripts"):
-    directory = Path(directory)
 
-    if not directory.exists():
-        print(f"Директория {directory} не существует")
-        return
-
-    json_files = list(directory.glob("*.json"))
-    if not json_files:
-        print(f"В {directory} нет json-файлов")
-        return
-
-    renamed = 0
-
-    print("\nПереименование файлов:\n")
-
-    for file_path in json_files:
-        broken_name = file_path.stem                      # имя без .json
-        fixed_name = fix_filename_encoding(broken_name)   # исправленное имя
-
-        # Если имя уже нормальное — пропускаем
-        if broken_name == fixed_name:
-            print(f"✓ {file_path.name} (уже нормально)")
-            continue
-
-        new_path = file_path.with_name(f"{fixed_name}.json")
-
-        try:
-            file_path.rename(new_path)
-            print(f"→ {file_path.name}")
-            print(f"     {fixed_name}.json\n")
-            renamed += 1
-        except Exception as e:
-            print(f"!! Ошибка при переименовании {file_path.name}: {e}")
-
-    print("\n==============================")
-    print(f"Готово. Переименовано: {renamed}")
-    print("==============================")
-
-
-def convert_txt_to_json(directory="memory/transcripts"):
+def convert_txt_to_json_safe(directory="memory/transcripts"):
     """
-    1. Исправляет кодировку имён файлов
-    2. Конвертирует .txt в .json
+    БЕЗОПАСНАЯ конвертация .txt в .json БЕЗ изменения содержимого
+    
+    Что делает:
+    1. Исправляет кодировку имён файлов (если нужно)
+    2. Меняет расширение .txt на .json
+    3. Удаляет markdown обёртку ```json...``` (если есть)
+    4. НЕ ТРОГАЕТ остальное содержимое (порядок ключей, форматирование, Unicode)
     """
     directory = Path(directory)
     
     if not directory.exists():
-        print(f"Директория {directory} не найдена!")
+        print(f"❌ Директория {directory} не найдена!")
         return
+    
+    txt_files = list(directory.glob("*.txt"))
+    
+    if not txt_files:
+        print(f"⚠️ В директории {directory} нет .txt файлов")
+        return
+    
+    print(f"Найдено файлов: {len(txt_files)}\n")
     
     renamed_count = 0
     converted_count = 0
     errors = []
     
-    txt_files = list(directory.glob("*.txt"))
-    
-    if not txt_files:
-        print(f"В директории {directory} нет .txt файлов")
-        return
-    
-    print(f"Найдено файлов: {len(txt_files)}\n")
-    
     for file_path in txt_files:
         original_name = file_path.name
         
         try:
-            # Шаг 1: Исправляем кодировку имени
-            name_without_ext = file_path.stem
-            extension = file_path.suffix
+            # Шаг 1: Читаем содержимое КАК ЕСТЬ (без парсинга!)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
             
+            # Шаг 2: Убираем ТОЛЬКО markdown обёртку (если есть)
+            original_content = content
+            content_stripped = content.strip()
+            
+            if content_stripped.startswith('```json') and content_stripped.endswith('```'):
+                # Удаляем ```json в начале
+                content = content_stripped[len('```json'):].strip()
+                # Удаляем ``` в конце
+                if content.endswith('```'):
+                    content = content[:-3].strip()
+                print(f"  🔧 Удалена markdown обёртка")
+            elif content_stripped.startswith('```') and content_stripped.endswith('```'):
+                # Обобщённый случай: ```...```
+                content = content_stripped[3:-3].strip()
+                print(f"  🔧 Удалена markdown обёртка")
+            else:
+                # Содержимое уже чистое
+                content = original_content
+            
+            # Шаг 3: Исправляем имя файла (если нужно)
+            name_without_ext = file_path.stem
             fixed_name = fix_filename_encoding(name_without_ext)
             
-            # Шаг 2: Меняем расширение на .json
+            # Шаг 4: Создаём новый путь с расширением .json
             new_name = f"{fixed_name}.json"
             new_path = file_path.parent / new_name
             
-            # Шаг 3: Проверяем, что содержимое - валидный JSON
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    
-                    # Удаляем markdown-обёртку ```json ... ```
-                    if content.strip().startswith('```json'):
-                        content = content.strip()
-                        content = content.replace('```json', '', 1)
-                        content = content.rsplit('```', 1)[0]
-                        content = content.strip()
-                    
-                    # Валидируем JSON
-                    json_data = json.loads(content)
-                
-                # Шаг 4: Записываем в новый файл с правильным именем
-                with open(new_path, 'w', encoding='utf-8') as f:
-                    json.dump(json_data, f, ensure_ascii=False, indent=2)
-                
-                # Шаг 5: Удаляем старый файл
-                file_path.unlink()
-                
-                print(f"✅ {original_name}")
-                print(f"   → {new_name}\n")
-                
-                converted_count += 1
-                if original_name != new_name:
-                    renamed_count += 1
-                    
-            except json.JSONDecodeError as e:
-                errors.append(f"{original_name}: Невалидный JSON - {e}")
-                print(f"❌ {original_name}: JSON ошибка")
-                
+            # Шаг 5: Записываем содержимое БЕЗ ИЗМЕНЕНИЙ
+            with open(new_path, 'w', encoding='utf-8', newline='') as f:
+                f.write(content)
+            
+            # Шаг 6: Удаляем старый .txt файл
+            file_path.unlink()
+            
+            print(f"✅ {original_name}")
+            if original_name != new_name:
+                print(f"   → {new_name}")
+                renamed_count += 1
+            
+            converted_count += 1
+            
         except Exception as e:
             errors.append(f"{original_name}: {e}")
-            print(f"❌ {original_name}: Ошибка - {e}")
+            print(f"❌ {original_name}: {e}")
     
     # Итоги
     print(f"\n{'='*60}")
@@ -139,43 +105,53 @@ def convert_txt_to_json(directory="memory/transcripts"):
             print(f"  - {error}")
 
 
-def preview_filenames(directory="memory/transcripts"):
+def preview_conversion(directory="memory/transcripts"):
     """
-    Показывает, как изменятся имена .json файлов.
+    Показывает предпросмотр изменений БЕЗ применения
     """
     directory = Path(directory)
-
+    
     if not directory.exists():
         print(f"❌ Директория {directory} не найдена!")
         return
-
-    json_files = list(directory.glob("*.json"))
-    if not json_files:
-        print(f"⚠️ В директории {directory} нет .json файлов")
+    
+    txt_files = list(directory.glob("*.txt"))
+    
+    if not txt_files:
+        print(f"⚠️ В директории {directory} нет .txt файлов")
         return
-
-    print("📋 ПРЕДПРОСМОТР ИСПРАВЛЕНИЯ ИМЁН\n")
-    print(f"{'БЫЛО':<50} → {'СТАНЕТ':<50}")
-    print(f"{'-'*50} → {'-'*50}")
-
-    for file_path in json_files:
+    
+    print("📋 ПРЕДПРОСМОТР КОНВЕРТАЦИИ\n")
+    print(f"{'БЫЛО':<60} → {'СТАНЕТ':<60}")
+    print(f"{'-'*60} → {'-'*60}")
+    
+    for file_path in txt_files:
         original = file_path.name
         fixed_stem = fix_filename_encoding(file_path.stem)
         new_name = f"{fixed_stem}.json"
-        print(f"{original:<50} → {new_name:<50}")
+        
+        # Проверяем, есть ли markdown обёртка
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+        
+        has_wrapper = content.startswith('```json') or content.startswith('```')
+        wrapper_note = " [+удалить обёртку]" if has_wrapper else ""
+        
+        print(f"{original:<60} → {new_name:<60}{wrapper_note}")
 
 
 if __name__ == "__main__":
-    import sys
+    print("🔧 Безопасная конвертация .txt → .json\n")
+    print("⚠️  ВАЖНО: Этот скрипт НЕ изменяет содержимое JSON!")
+    print("   Только меняет расширение и удаляет markdown обёртку.\n")
     
-    print("🔧 Исправление кодировки и конвертация в JSON\n")
+    preview_conversion()
     
-    preview_filenames()
     print(f"\n{'='*60}")
     response = input("Выполнить конвертацию? (yes/no): ").strip().lower()
     
     if response in ['yes', 'y', 'да', 'д']:
         print("\nНачинаем конвертацию...\n")
-        convert_txt_to_json()
+        convert_txt_to_json_safe()
     else:
-        print("Отменено пользователем")
+        print("❌ Отменено пользователем")
