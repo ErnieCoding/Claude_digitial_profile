@@ -1,5 +1,5 @@
 #TODO: MemoryTool.py - add correct syntax for all commands
-#TODO: Multithreaded query handler - modify new_sys_prompt to include a placeholder for response file creation (put them in ПОШАГОВАЯ ЛОГИКА ОБРАБОТКИ)
+#TODO: Multithreaded query handler - modify new_sys_prompt to include a placeholder for response file creation even if there is already a response in the analytics_db (put them in ПОШАГОВАЯ ЛОГИКА ОБРАБОТКИ)
 #TODO: Multithreaded query handler - figure out how to reduce generation time
 #TODO: Multithreaded query handler - adapt the output format more closely
 #TODO: Multithreaded query handler - reduce max_tokens as needed (get generation <= 1500 tokens)
