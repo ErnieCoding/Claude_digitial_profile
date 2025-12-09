@@ -1,4 +1,3 @@
-#TODO: Try to generate the files again - fix the error with invalid path for some of the files
 from MemoryTool import MemoryTool, SYSTEM_PROMPT, MODEL, BETAS
 from ClaudeClient import Client
 
@@ -7,7 +6,12 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
 ## ЗАДАЧА:
 Проанализируй ВСЕ файлы встреч в transcripts/ и создай сводный файл analytics_db.json с агрегированными данными.
 
-## СТРУКТУРА ФАЙЛА (<num> И "" - ПЛЕЙСХОЛДЕРЫ, ВМЕСТО НИХ ПОСТАВЬ АКТУАЛЬНЫЕ ДАННЫЕ):
+## КРИТИЧЕСКИ ВАЖНО:
+- Путь: /memories/analytics_db.json (С ведущим слешем!)
+- Передай file_text с ПОЛНЫМ содержимым JSON
+- НЕ создавай пустой файл
+
+## СТРУКТУРА ФАЙЛА (<num>, "" И [] - ПЛЕЙСХОЛДЕРЫ, ВМЕСТО НИХ ПОСТАВЬ АКТУАЛЬНЫЕ ДАННЫЕ):
 
 ```json
 {
@@ -20,7 +24,7 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
     "meeting_ids_by_success": {
         "successful": [101, 105, 112, ...],
         "failed": [102, 103, 108, ...]
-        },
+    },
     "overall_conversion": <num>,
     "last_updated": "",
     "meetings_date_range": {
@@ -138,13 +142,13 @@ if __name__ == "__main__":
     runner = client.client.beta.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
-            max_tokens=5000, # max_tokens для ответа
+            max_tokens=20000, # max_tokens для ответа
             system=SYSTEM_PROMPT,
             tools=[memory],
             messages=[
                 {
                     "role":"user",
-                    "content":CREATE_ANALYTICS_DATABASE_PROMPT,
+                    "content": CREATE_ANALYTICS_DATABASE_PROMPT,
                 }
             ]
     )

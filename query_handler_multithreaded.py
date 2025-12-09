@@ -1,3 +1,9 @@
+#TODO: MemoryTool.py - add correct syntax for all commands
+#TODO: Multithreaded query handler - modify new_sys_prompt to include a placeholder for response file creation (put them in ПОШАГОВАЯ ЛОГИКА ОБРАБОТКИ)
+#TODO: Multithreaded query handler - figure out how to reduce generation time
+#TODO: Multithreaded query handler - adapt the output format more closely
+#TODO: Multithreaded query handler - reduce max_tokens as needed (get generation <= 1500 tokens)
+
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 from MemoryTool import MemoryTool, SYSTEM_PROMPT, MODEL, BETAS
@@ -14,8 +20,8 @@ def process_question(i, query, new_sys_prompt, client, memory):
         runner = client.client.beta.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
-            max_tokens=3000,
-            system=new_sys_prompt + f"**Свой финальный ответ сохраняйте в файле с названием `demo2pilots_analysis_Q{i + 1}.md`**",
+            max_tokens=10000,
+            system=new_sys_prompt + f"**Свой финальный ответ ВСЕГДА сохраняйте в файле с названием `demo2pilots_analysis_Q{i + 1}.md`** (даже если ответ уже есть в базе)",
             tools=[memory],
             messages=[
                 {
@@ -34,7 +40,7 @@ def process_question(i, query, new_sys_prompt, client, memory):
         end_time = time.time()
         time_elapsed = end_time - start_time
         
-        output_file = f"tests/Demo2Pilots DB Test/LLM_response{i+1}.txt"
+        output_file = f"tests/Demo2Pilots Сравнения/LLM_Generation_Response{i+1}.txt"
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(f"Time took for question {i+1}: {time_elapsed:.2f} seconds\n\n")
             f.write("\n".join(all_text))
@@ -67,7 +73,8 @@ if __name__ == "__main__":
         "Найди закономерность: успешные встречи с клиентами без задачи - какие критерии у них выше среднего?",
         "Какие каналы привлечения приводят клиентов с конкретной задачей, и какая у них конверсия?",
         "Сравни: внутренние vs внешние мероприятия - разница в конверсии, оценках критериев, типах клиентов?",
-    ] 
+    ]
+
     new_sys_prompt = SYSTEM_PROMPT + f"""\n\nВы - аналитический ассистент для руководителя отдела продаж компании RConf, которая разрабатывает и продает платформу видеоконференцсвязи с искусственным интеллектом для оценки и развития сотрудников.
 Ваша главная задача - Анализировать базу данных встреч с клиентами для выявления:
 
@@ -79,9 +86,9 @@ if __name__ == "__main__":
 - Факторов, влияющих на размер сделки (purchase_amount)
 
 ## ПОШАГОВАЯ ЛОГИКА ОБРАБОТКИ
-  1. Проверь файлы analytics_db.json и meetings_index.json - НЕ ИЗМЕНЯЙ ЭТИ ФАЙЛЫ НИ В КОЕМ СЛУЧАЕ
+  1. Проверь файлы analytics_db.json - НЕ ИЗМЕНЯЙ ДАННЫЙ ФАЙЛ НИ В КОЕМ СЛУЧАЕ
   2. [PLACEHOLDER]
-  2. Выдели для себя нужную информацию и только затем проходись по нужным файлам (analytics_db.json и meetings_index.json содержат краткие сводки, которые полезны для выявления нужных файлов для проверки)
+  2. Выдели для себя нужную информацию и только затем проходись по нужным файлам (analytics_db.json содержит краткие сводки, которые полезны для выявления нужных файлов для проверки)
   3. Игнорируй файлы с названием "demo2pilots_analysis{{num}}.md" - бери сводки только из вышеуказанных файлов и директории transripts/
 
 ## **КРИТИЧЕСКИ ВАЖНО:** Подсчет встреч и статусы
