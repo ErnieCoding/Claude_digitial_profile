@@ -27,7 +27,7 @@ SYSTEM_PROMPT = """Правила работы с memory tool:
 
 **ПРАВИЛЬНЫЙ СИНТАКСИС:**
 ```
-create(path="/memories/analytics_db.json", file_text="<полный JSON здесь>")
+create(path="/memories/analytics_db.json", file_text="<YOUR_TEXT_HERE>") ---- file_text ДОЛЖЕН БЫТЬ ОБЯЗАТЕЛЬНО ЗАПОЛНЕН, ОН НЕ МОЖЕТ БЫТЬ ПУСТЫМ
 ```
 
 - В /transcripts/ ты можешь ТОЛЬКО просматривать файлы через view
