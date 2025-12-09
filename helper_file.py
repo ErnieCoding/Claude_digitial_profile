@@ -34,19 +34,22 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
       "total": <num>,
       "successful": <num>,
       "conversion": <num>,
-      "meetings_filenames": ""
+      "meetings_filenames": [],
+      "meeting_ids": []
     },
     "Month-2": {
       "total": <num>,
       "successful": <num>,
       "conversion": <num>,
-      "meetings_filenames": ""
+      "meetings_filenames": [],
+      "meeting_ids": []
     },
     "Month-3": {
       "total": <num>,
       "successful": <num>,
-      "conversion": <num>
-      "meetings_filenames": "",
+      "conversion": <num>,
+      "meetings_filenames": [],
+      "meeting_ids": []
     }
   },
   
@@ -56,14 +59,16 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
       "successful": <num>,
       "conversion": <num>,
       "average_activity": <num>,
-      "meetings_filenames": ""
+      "meetings_filenames": [],
+      "meeting_ids": []
     },
     "Manager 2": {
       "total_meetings": <num>,
       "successful": <num>,
       "conversion": <num>,
       "average_activity": <num>,
-      "meetings_filenames": ""
+      "meetings_filenames": [],
+      "meeting_ids": []
     }
   },
   
@@ -133,7 +138,7 @@ if __name__ == "__main__":
     runner = client.client.beta.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
-            max_tokens=20000, # max_tokens для ответа
+            max_tokens=5000, # max_tokens для ответа
             system=SYSTEM_PROMPT,
             tools=[memory],
             messages=[
