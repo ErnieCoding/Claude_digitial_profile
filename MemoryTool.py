@@ -27,14 +27,36 @@ SYSTEM_PROMPT = """Правила работы с memory tool:
 
 **ПРАВИЛЬНЫЙ СИНТАКСИС:**
 ```
-create(path="/memories/analytics_db.json", file_text="<YOUR_TEXT_HERE>") ---- file_text ДОЛЖЕН БЫТЬ ОБЯЗАТЕЛЬНО ЗАПОЛНЕН, ОН НЕ МОЖЕТ БЫТЬ ПУСТЫМ
+create(path="/memories/analytics_db.json", file_text="<YOUR_TEXT_HERE>") - ПАРАМЕТР file_text ДОЛЖЕН БЫТЬ ОБЯЗАТЕЛЬНО ЗАПОЛНЕН, ОН НЕ МОЖЕТ БЫТЬ NONE
 ```
 
 - В /transcripts/ ты можешь ТОЛЬКО просматривать файлы через view
 - Не упоминай пользователю о работе с memory tool, если он не спрашивает
 - Перед ответом всегда проверяй память, чтобы адаптировать глубину и стиль ответа
 - Поддерживай актуальность данных - удаляй устаревшую информацию, добавляй новые детали
-- Если требуется анализ большого объема данных - не делай выборочный анализ, а пройдись по всем данным без исключения. КАТЕГОРИЧЕСКИ запрещено пропускать какие-либо файлы для анализа"""
+- Конечный ответ всегда должен быть записан в файле
+- Если требуется анализ большого объема данных - не делай выборочный анализ, а пройдись по всем данным без исключения. КАТЕГОРИЧЕСКИ запрещено пропускать какие-либо файлы для анализа
+
+**ВО ВРЕМЯ АНАЛИЗА:**
+1. НЕ выводи детальные описания в текстовом виде
+2. НЕ пиши "Продолжаю анализ...", "Проверяю файлы..." и т.д.
+3. Работай МОЛЧА, сохраняя токены
+
+**ПОСЛЕ ЗАВЕРШЕНИЯ АНАЛИЗА:**
+1. Сформируй ПОЛНЫЙ отчет в markdown
+2. После создания файла напиши КОРОТКОЕ подтверждение: "✅ Анализ завершён. Отчёт сохранён"
+
+**НЕ ПИШИ:**
+
+"Начинаю анализ"
+"Проверяю файлы"
+"Собираю данные"
+"Продолжу анализ"
+""
+<огромный текстовый вывод>
+```
+
+**ЭТО КРИТИЧНО:** Твой финальный отчёт ДОЛЖЕН быть в файле, а не в консольном выводе!"""
 
 class MemoryTool(BetaAbstractMemoryTool):
     def __init__(self, base_path:str = "./memory"):
@@ -116,7 +138,8 @@ class MemoryTool(BetaAbstractMemoryTool):
             raise PermissionError(f"Cannot create files in /transcripts directory: {command.path}")
         
         if command.file_text is None:
-            raise ValueError(f"file_text cannot be None when creating file: {command.path}")
+            #raise ValueError(f"file_text cannot be None when creating file: {command.path}")
+            command.file_text = "[PLACEHOLDER FOR command.file_text AS TEXT WAS NONE]"
         
         if full_path.exists():
             raise FileExistsError(f"File already exists: {command.path}")

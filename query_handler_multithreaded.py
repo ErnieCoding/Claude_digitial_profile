@@ -1,8 +1,5 @@
 #TODO: MemoryTool.py - add correct syntax for all commands
-#TODO: Multithreaded query handler - modify new_sys_prompt to include a placeholder for response file creation even if there is already a response in the analytics_db (put them in ПОШАГОВАЯ ЛОГИКА ОБРАБОТКИ)
-#TODO: Multithreaded query handler - figure out how to reduce generation time
-#TODO: Multithreaded query handler - adapt the output format more closely
-#TODO: Multithreaded query handler - reduce max_tokens as needed (get generation <= 1500 tokens)
+#TODO: Figure out how to prevent the model from printing intermediary output in the console (wastes max_tokens causing errors sometimes and increase in generation time)
 
 
 ## Ваш подход
@@ -26,16 +23,53 @@ def process_question(i, query, new_sys_prompt, client, memory):
     """Обрабатывает один вопрос"""
     start_time = time.time()
     
-    print(f"\n{'='*60}")
-    print(f"[Thread {i+1}] Processing query:\n{query}\n")
+    print(f"\n{'='*60}\n")
+    print(f"Started Thread {i+1}\n---\nProcessing query: {query}\n")
+    print(f"\n{'='*60}\n")
     
+    silence_note = """
+
+**ВО ВРЕМЯ АНАЛИЗА:**
+1. НЕ выводи детальные описания в текстовом виде
+2. НЕ пиши "Продолжаю анализ...", "Проверяю файлы..." и т.д.
+3. Работай МОЛЧА, сохраняя токены
+
+**ПОСЛЕ ЗАВЕРШЕНИЯ АНАЛИЗА:**
+1. Сформируй ПОЛНЫЙ отчет в markdown
+2. После создания файла напиши КОРОТКОЕ подтверждение: "✅ Анализ завершён. Отчёт сохранён"
+
+**НЕ ДЕЛАЙ:**
+```
+# ❌ Плохо
+print("Начинаю анализ...")
+print("Проверяю файлы...")
+print("Собираю данные...")
+<огромный текстовый вывод>
+create(path="...", file_text=None)  # Токены закончились!
+```
+
+**ДЕЛАЙ:**
+```
+# ✅ Хорошо
+<тихая работа с файлами>
+create(path="/memories/demo2pilots_analysis_Q3.md", file_text="# АНАЛИЗ...
+<весь отчёт>
+")
+print("✅ Анализ завершён")
+```
+
+**ЭТО КРИТИЧНО:** Твой финальный отчёт ДОЛЖЕН быть в файле, а не в консольном выводе!
+
+"""
+
     try:
         new_sys_prompt = new_sys_prompt.replace("[PLACEHOLDER1]", f"Если создаешь файл с прогрессом - СОЗДАВАЙ ТОЛЬКО С НАЗВАНИЕМ progress_Q{i + 1}.txt")
         new_sys_prompt = new_sys_prompt.replace("[PLACEHOLDER2]", f"**Свой финальный ответ ВСЕГДА СОХРАНЯЙ В ФАЙЛЕ с названием `demo2pilots_analysis_Q{i + 1}.txt`** даже если ответ уже есть в базе")
+        
         runner = client.client.beta.messages.tool_runner(
             betas=BETAS,
             model=MODEL,
-            max_tokens=3000,
+            max_tokens=10000,
             system=new_sys_prompt,
             tools=[memory],
             messages=[
@@ -50,6 +84,7 @@ def process_question(i, query, new_sys_prompt, client, memory):
         for message in runner:
             for block in message.content:
                 if block.type == "text":
+                    print(block.text)
                     all_text.append(block.text)
         
         end_time = time.time()
@@ -104,7 +139,7 @@ if __name__ == "__main__":
   1. Проверь файлы analytics_db.json - НЕ ИЗМЕНЯЙ ДАННЫЙ ФАЙЛ НИ В КОЕМ СЛУЧАЕ
   2. [PLACEHOLDER1]
   2. Выдели для себя нужную информацию и только затем проходись по нужным файлам (analytics_db.json содержит краткие сводки, которые полезны для выявления нужных файлов для проверки)
-  3. Игнорируй файлы с названием "demo2pilots_analysis{{num}}.md" - бери сводки только из вышеуказанных файлов и директории transripts/
+  3. Игнорируй файлы с названием "demo2pilots_analysis{{num}}.txt" - бери сводки только из вышеуказанных файлов и директории transripts/
   4. [PLACEHOLDER2]
 
 ## **КРИТИЧЕСКИ ВАЖНО:** Подсчет встреч и статусы
@@ -276,7 +311,7 @@ meeting_id - это просто идентификатор встречи (мо
     
     
     # === Многопоточная обработка ===
-    max_workers = 5  # 5 threads
+    max_workers = 10  # 5 threads
     total_start = time.time()
     
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
