@@ -11,19 +11,49 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
 - Передай file_text с ПОЛНЫМ содержимым JSON
 - НЕ создавай пустой файл
 
+### Классификация статусов клиентов
+✅ УСПЕШНЫЕ встречи (successful, клиент согласился на следующий шаг):
+- в графе "meeting_success" стоит "да"
+- "принято решение о пилоте"
+- "принято решение о пилоте, но отказ до пилота" (клиент изначально согласился, но затем отказался)
+- "принято решение о покупке без пилота"
+- "в процессе пилота"
+- "принято решение о покупке после пилота"
+- "отказ после пилота" (клиент прошел пилот, значит демо была успешной)
+- "в процессе принятия решения после пилота"
+- "покупка"
+
+Логика: Если клиент согласился на пилот или покупку после демо - демо-встреча была успешной, независимо от дальнейшей судьбы сделки.
+
+❌ НЕУСПЕШНЫЕ встречи (failed, клиент не согласился на следующий шаг):
+- в графе "meeting_success" стоит "нет"
+- "отказ после демо"
+- "потерян после демо"
+
+⏸️ НЕЙТРАЛЬНЫЕ встречи (neutral, решение ещё не принято)
+- в графе "meeting_success" стоит "непонятно"
+- "в процессе принятия решения о пилоте" (еще думает, решение не принято)
+
 ## СТРУКТУРА ФАЙЛА (<num>, "" И [] - ПЛЕЙСХОЛДЕРЫ, ВМЕСТО НИХ ПОСТАВЬ АКТУАЛЬНЫЕ ДАННЫЕ):
 
 ```json
 {
   "metadata": {
     "total_meetings": <num>,
-    "successful_meetings_count": <num>,
-    "successful_meetings_filenames": "",
-    "failed_meetings_count": <num>,
-    "failed_meetings_filenames": "",
-    "meeting_ids_by_success": {
-        "successful": [101, 105, 112, ...],
-        "failed": [102, 103, 108, ...]
+    "successful_meetings": {
+      "count": <num>,
+      "filenames": [],
+      "meeting_ids": [],
+    },
+    "unsuccessful_meetings": {
+      "count": <num>,
+      "filenames": [],
+      "meeting_ids": [],
+    },
+    "neutral_meetings": {
+      "count": <num>,
+      "filenames": [],
+      "meeting_ids": [],
     },
     "overall_conversion": <num>,
     "last_updated": "",
@@ -115,7 +145,26 @@ CREATE_ANALYTICS_DATABASE_PROMPT = """Ты - аналитик данных, ко
       "client_task_classification": <num>,
       "cognitive_overload_assessment": <num>
     },
-  },
+    "neutral_meetings": {
+      "rapport_building": <num>,
+      "situation_discovery": <num>,
+      "problem_existence_depth": <num>,
+      "problem_implications": <num>,
+      "need_payoff_clarity": <num>,
+      "sales_questioning_quality": <num>,
+      "solution_fit": <num>,
+      "client_engagement": <num>,
+      "engagement_dynamics": <num>,
+      "solution_presentation_quality": <num>,
+      "understanding_validation": <num>,
+      "objection_handling": <num>,
+      "clear_next_steps": <num>,
+      "stakeholder_mapping": <num>,
+      "budget_timeline_qualification": <num>,
+      "client_task_classification": <num>,
+      "cognitive_overload_assessment": <num>
+    }
+  }
 }
 ```
 
