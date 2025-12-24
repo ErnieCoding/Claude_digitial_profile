@@ -24,12 +24,6 @@ SYSTEM_PROMPT = """Правила работы с memory tool:
 2. /transcripts/ - только для чтения транскриптов встреч (ЗАПРЕЩЕНО создавать, редактировать или удалять файлы)
 
 - В /memories/ ты можешь использовать операции: create, insert, delete, rename
-
-**ПРАВИЛЬНЫЙ СИНТАКСИС:**
-```
-create(path="/memories/analytics_db.json", file_text="<YOUR_TEXT_HERE>") - ПАРАМЕТР file_text ДОЛЖЕН БЫТЬ ОБЯЗАТЕЛЬНО ЗАПОЛНЕН, ОН НЕ МОЖЕТ БЫТЬ NONE
-```
-
 - В /transcripts/ ты можешь ТОЛЬКО просматривать файлы через view
 - Не упоминай пользователю о работе с memory tool, если он не спрашивает
 - Перед ответом всегда проверяй память, чтобы адаптировать глубину и стиль ответа
@@ -176,7 +170,8 @@ class MemoryTool(BetaAbstractMemoryTool):
             raise FileNotFoundError(f"File not found: {command.path}")
         
         if command.insert_text is None:
-            raise ValueError(f"insert_text cannot be None for insert operation in {command.path}")
+            #raise ValueError(f"insert_text cannot be None for insert operation in {command.path}")
+            command.insert_text = "[PLACEHOLDER FOR command.insert_text AS TEXT WAS NONE]"
             
         content = full_path.read_text(encoding="utf-8")
         lines = content.splitlines(keepends=True)
@@ -218,7 +213,11 @@ class MemoryTool(BetaAbstractMemoryTool):
             raise FileNotFoundError(f"File not found: {command.path}")
         
         if command.old_str is None or command.new_str is None:
-            raise ValueError(f"old_str and new_str cannot be None for str_replace in {command.path}")
+            #raise ValueError(f"old_str and new_str cannot be None for str_replace in {command.path}")
+            if command.old_str is None:
+                command.old_str = "[PLACEHOLDER FOR command.old_str AS TEXT WAS NONE]"
+            if command.new_str is None:
+                command.new_str = "[PLACEHOLDER FOR command.new_str AS TEXT WAS NONE]"
 
         content = full_path.read_text(encoding="utf-8")
         count = content.count(command.old_str)
@@ -226,7 +225,7 @@ class MemoryTool(BetaAbstractMemoryTool):
         if count == 0:
             raise ValueError(f"Text not found in {command.path}")
         elif count > 1:
-            raise ValueError(f"Text appears {count} times in {command.path}. Must be unique.")
+            raise ValueError(f"Text `{command.old_str}` appears {count} times in {command.path}. Must be unique.")
 
         new_content = content.replace(command.old_str, command.new_str)
         full_path.write_text(new_content, encoding="utf-8")
