@@ -1,4 +1,5 @@
-#TODO: Figure out how to prevent the model from printing intermediary output in the console (wastes max_tokens causing errors sometimes and increase in generation time)
+#TODO: Test the new system prompt to prevent overgeneration of intermediary responses
+#TODO: Implement the absolute mode prompt?
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
