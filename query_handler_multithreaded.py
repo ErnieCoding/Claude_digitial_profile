@@ -42,7 +42,7 @@ def process_question(i, query, new_sys_prompt, client, memory):
         end_time = time.time()
         time_elapsed = end_time - start_time
         
-        output_file = f"tests/Demo2Pilots DB Test/LLM_Generation_Response{i+1}.txt"
+        output_file = f"tests/Demo2Pilots Test/LLM_Generation_Response{i+1}.txt"
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(f"Question {i+1}: {query}\n")
             f.write(f"Time took for question {i+1}: {time_elapsed:.2f} seconds\n\n")
